@@ -25,6 +25,7 @@ exports_files(glob(["**"]))
 """
 
 def _helm_impl(ctx):
+    toolchain_found = False
     for module in ctx.modules:
         if module.is_root and len(module.tags.options) > 0:
             # TODO Use deprecation tag when available: https://github.com/bazelbuild/bazel/issues/24843
@@ -32,6 +33,9 @@ def _helm_impl(ctx):
         toolchain_options = module.tags.toolchain + module.tags.options
         if len(toolchain_options) > 1:
             fail("Only a single helm toolchain is supported for now.")
+        if toolchain_found and len(toolchain_options) > 0:
+            continue
+
         if len(toolchain_options) == 1:
             toolchain_option = toolchain_options[0]
             version = toolchain_option.version
@@ -42,6 +46,8 @@ def _helm_impl(ctx):
             _register_go_yaml()
 
         for repository in module.tags.import_repository:
+            if not module.is_root:
+                print("Ignoring import_repository of", repository.name, "from", repository.repository, "because it's not in the root module")  # buildifier: disable=print
             helm_import_repository(
                 name = repository.name,
                 chart_name = repository.chart_name,
