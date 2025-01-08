@@ -26,8 +26,6 @@ exports_files(glob(["**"]))
 
 def _helm_impl(ctx):
     for module in ctx.modules:
-        if not module.is_root:
-            continue
         if module.is_root and len(module.tags.options) > 0:
             # TODO Use deprecation tag when available: https://github.com/bazelbuild/bazel/issues/24843
             print("helm.options() is deprecated. Use helm.toolchain() instead.")  # buildifier: disable=print
