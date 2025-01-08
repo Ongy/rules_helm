@@ -37,6 +37,7 @@ def _helm_impl(ctx):
             continue
 
         if len(toolchain_options) == 1:
+            toolchain_found = True
             toolchain_option = toolchain_options[0]
             version = toolchain_option.version
             helm_url_templates = toolchain_option.helm_url_templates
